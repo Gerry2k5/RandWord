@@ -13,6 +13,8 @@ DICT_PATH = "/usr/share/myspell/dicts/"
 DICT_FILE = DICT_PATH + DICT_NAME + ".dic"
 AFFIX_FILE = DICT_PATH + DICT_NAME + ".aff"
 
+EXCLUDE_AFFIXES = set("M")
+
 def main():
     args = get_args()
     # TODO: Add args for changing the dictionary and affix file on invocation
@@ -22,7 +24,7 @@ def main():
     wordlists = []
     
     for wordform_rule in wordform_rules:
-        word_affix_rules = [all_affix_rules[affix] for affix in tuple(wordform_rule[2])]
+        word_affix_rules = [all_affix_rules[affix] for affix in tuple(wordform_rule[2]) if affix not in EXCLUDE_AFFIXES]
         wordlist = apply_affixes(wordform_rule[0], word_affix_rules)
         wordlists.append(wordlist)
 
@@ -174,11 +176,13 @@ def get_affix_rules(affix_file):
 
 
 def get_args():
-    """ Get arguments from the command line using the argparse module """ 
-    parser = argparse.ArgumentParser()
+    """
+    Parse arguments from the command line using the argparse module
+    """ 
+    parser = argparse.ArgumentParser(description="Random Word Generator")
     parser.add_argument("numwords", type=int, nargs="?", default=3, help="Number of words to display")
-    parser.add_argument("-d", "--delim", nargs="?", const="", default=" ", help="""Delimiter between words(Defaults to a single space, but if the option is supplied with no parameter, the space is omitted)""")
-    return (parser.parse_args())
+    parser.add_argument("-d", "--delim", nargs="?", const="", default=" ", help="Delimiter between words(Defaults to a single space, but if the option is supplied with no parameter, the space is omitted)")
+    return parser.parse_args()
     
 
 def get_words(dictionary_file, num_words):
