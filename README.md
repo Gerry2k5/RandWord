@@ -3,12 +3,16 @@ Random Word Generator
 
 ### Requirements
 At least one dictionary and affix file are required.
+
 Dictionaries in iSpell/MySpell/Hunspell format will work.
+
 Affix files need to be in the MySpell/Hunspell format; handling for iSpell format files may be included later.
 
 ### Using the utility
 Usage `randword.py [number of words] -d [delimiter]` OR `randword.py [number of words] --delim [delimiter]`  
-Output the specified number of words to stdout
+
+Output the specified number of words to stdout.
+
 The default delimiter is a single space.
 
 ### Configuration
