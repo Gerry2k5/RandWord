@@ -7,27 +7,53 @@ import random
 import re
 import sys
 
-DICT_NAME = "en_GB-large"
-DICT_PATH = "/usr/share/myspell/dicts/"
-
-DICT_FILE = DICT_PATH + DICT_NAME + ".dic"
-AFFIX_FILE = DICT_PATH + DICT_NAME + ".aff"
-
-EXCLUDE_AFFIXES = set("M")
-
 def main():
-    args = get_args()
+    dict_name = "en_GB-large"
+    dict_path = "/usr/share/myspell/dicts/"
+    
+    dict_file = dict_path + dict_name + ".dic"
+    affix_file = dict_path + dict_name + ".aff"
+    
+    default_delim = " "
+    default_ignore = "M"
+
+    parser = argparse.ArgumentParser(description="Random Word Generator")
+    parser.add_argument(
+            "numwords",
+            nargs="?",
+            type=int,
+            default=1,
+            help="Number of words to display"
+    )
+    parser.add_argument(
+            "-d", "--delim",
+            nargs="?",
+            const="",
+            default=default_delim,
+            help="Delimiter between words (Defaults to a single space)"
+    )
+    parser.add_argument(
+            "-i", "--ignore",
+            nargs="?",
+            const="",
+            default=default_ignore,
+            help="Affix(es) to ignore (Defaults to " + default_ignore + ")"
+    )
+    args = parser.parse_args()
+
     # TODO: Add args for changing the dictionary and affix file on invocation
-    all_affix_rules = get_affix_rules(AFFIX_FILE)
-    wordform_rules = get_words(DICT_FILE, args.numwords)
+    all_affix_rules = get_affix_rules(affix_file)
+    wordform_rules = get_words(dict_file, args.numwords)
     
     wordlists = []
+    
+    affix_ignore_list = set(args.ignore)
     
     for wordform_rule in wordform_rules:
         word_affix_rules = [
                 all_affix_rules[affix]
                 for affix in tuple(wordform_rule[2])
-                if affix not in EXCLUDE_AFFIXES
+                if affix not in affix_ignore_list
         ]
         wordlist = apply_affixes(wordform_rule[0], word_affix_rules)
         wordlists.append(wordlist)
@@ -52,17 +78,18 @@ def apply_affixes(base_word, affix_rules):
     List object containing all words formed by applying
     affixes to the base word.
     """
-    complete_words = []
-    partial_words = []
 
-    # Begin with base word in partial - DONE
-    # Apply standalone suffixes to base word and add to complete - DONE
-    # Apply standalone prefixes to base word and add to complete - DONE
-    # Apply mixable suffixes to base word and add to partial - DONE
-    # Apply mixable prefixes to partial - DONE
-    # Add partial to complete - DONE
+    # Begin with base word in partial
+    # Apply standalone suffixes to base word and add to complete
+    # Apply standalone prefixes to base word and add to complete
+    # Apply mixable suffixes to base word and add to partial
+    # Apply mixable prefixes to partial
+    # Add partial to complete
     
     # TODO: Test if it is quicker to add prefixes before suffixes
+
+    complete_words = []
+    partial_words = []
     
     partial_words.append(base_word)
     
@@ -232,31 +259,6 @@ def get_affix_rules(affix_file):
         
     return rule_dict
 
-
-def get_args():
-    """
-    Parse arguments from the command line using the argparse module
-    """ 
-    parser = argparse.ArgumentParser(description="Random Word Generator")
-    parser.add_argument(
-            "numwords",
-            nargs="?",
-            type=int,
-            default=3,
-            help="Number of words to display"
-    )
-    parser.add_argument(
-            "-d", "--delim",
-            nargs="?",
-            const="",
-            default=" ",
-            help="Delimiter between words "
-                 + "(Defaults to a single "
-                 + "space, but if the option is supplied with no "
-                 + "parameter, the space is omitted)"
-    )
-    return parser.parse_args()
-    
 
 def get_words(dictionary_file, num_words):
     """
