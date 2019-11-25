@@ -119,6 +119,59 @@ def apply_affixes(base_word, affix_rules):
     return complete_words
 
 
+def apply_affixes_2(base_word, affix_rules):
+    """
+    Build all possible words by applying affix rules to a base word
+    
+    Parameters:
+    base_word (string):  Base word without any affix specifiers
+    affix_rules (list):  Affix rules to be applied
+    
+    Returns:
+    List object containing all words formed by applying
+    affixes to the base word.
+    """
+
+    # Begin with base word in partial
+    # Apply standalone suffixes to base word and add to complete
+    # Apply standalone prefixes to base word and add to complete
+    # Apply mixable suffixes to base word and add to partial
+    # Apply mixable prefixes to partial
+    # Add partial to complete
+    
+    # TODO: Test if it is quicker to add prefixes before suffixes
+
+    complete_words = []
+    partial_words = []
+    
+    partial_words.append(base_word)
+    
+    complete_words.extend([
+            apply_suffix(base_word, affix_rule[3:])
+            for affix_rule in affix_rules
+            if affix_rule[0] == "SFX" and not affix_rule[1]
+    ])
+    complete_words.extend([
+            apply_prefix(base_word, affix_rule[3:])
+            for affix_rule in affix_rules
+            if affix_rule[0] == "PFX" and not affix_rule[1]
+    ])
+    partial_words.extend([
+            apply_prefix(base_word, affix_rule[3:])
+            for affix_rule in affix_rules
+            if affix_rule[0] == "PFX" and affix_rule[1]
+    ])
+    for partial_word in partial_words[:]:
+        partial_words.extend([
+                apply_suffix(partial_word, affix_rule[3:])
+                for affix_rule in affix_rules
+                if affix_rule[0] == "SFX" and affix_rule[1]
+        ])
+    complete_words.extend(partial_words)
+    
+    return complete_words
+
+
 def apply_prefix(base_word, prefix_rules):
     """
     Evaluate prefix rules and apply the relevant rule to a word
@@ -260,7 +313,7 @@ def get_affix_rules(affix_file):
     return rule_dict
 
 
-def get_affix_rules2(affix_file):
+def get_affix_rules_mmap(affix_file):
     """
     Read affix rules from a specified file and return these
     in a structured format
