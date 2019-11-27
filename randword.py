@@ -8,12 +8,13 @@ import re
 import sys
 
 def main():
-    dict_name = "en_GB-large"
-    dict_path = "/usr/share/myspell/dicts/"
+    default_dict_name = "en_GB-large"
+    default_dict_path = "/usr/share/myspell/dicts/"
     
-    dict_file = dict_path + dict_name + ".dic"
-    affix_file = dict_path + dict_name + ".aff"
+    default_dict_file = default_dict_path + default_dict_name + ".dic"
+    default_affix_file = default_dict_path + default_dict_name + ".aff"
     
+    default_word_count = 1
     default_delim = " "
     default_ignore = "M"
 
@@ -22,7 +23,7 @@ def main():
             "numwords",
             nargs="?",
             type=int,
-            default=1,
+            default=default_word_count,
             help="Number of words to display"
     )
     parser.add_argument(
@@ -39,21 +40,48 @@ def main():
             default=default_ignore,
             help="Affix(es) to ignore (Defaults to " + default_ignore + ")"
     )
+    parser.add_argument(
+            "--dictfile",
+            nargs="?",
+            const="",
+            default=default_dict_file,
+            help="Dictionary file to use for word selection"
+    )
+    parser.add_argument(
+            "--affixfile",
+            nargs="?",
+            const="",
+            default=default_affix_file,
+            help="Affix file to use for generating word variants"
+    )
     args = parser.parse_args()
 
+    affix_ignore_list = set(args.ignore)
+    
     # TODO: Add args for changing the dictionary and affix file on invocation
-    all_affix_rules = get_affix_rules(affix_file)
-    wordform_rules = get_words(dict_file, args.numwords)
+    all_affix_rules = get_affix_rules(args.affixfile)
+    all_affixes = set(all_affix_rules.keys())
+    
+    wordform_rules = get_words(args.dictfile, args.numwords)
     
     wordlists = []
     
-    affix_ignore_list = set(args.ignore)
-    
+    # TODO: Handle case when affix in dictionary is not in list
     for wordform_rule in wordform_rules:
+        word_affixes = set(wordform_rule[2])
+        valid_affixes = word_affixes.intersection(all_affixes)
+        valid_affixes.difference_update(affix_ignore_list)
+        # TODO: Time testing for faster of difference, - and difference_update
+#        usable_affixes = valid_affixes.difference(affix_ignore_list)
+#        usable_affixes = valid_affixes - affix_ignore_list
+
+#        word_affix_rules = [
+#                all_affix_rules[affix]
+#                for affix in usable_affixes
+#        ]
         word_affix_rules = [
                 all_affix_rules[affix]
-                for affix in tuple(wordform_rule[2])
-                if affix not in affix_ignore_list
+                for affix in valid_affixes
         ]
         wordlist = apply_affixes(wordform_rule[0], word_affix_rules)
         wordlists.append(wordlist)
@@ -82,12 +110,10 @@ def apply_affixes(base_word, affix_rules):
     # Begin with base word in partial
     # Apply standalone suffixes to base word and add to complete
     # Apply standalone prefixes to base word and add to complete
-    # Apply mixable suffixes to base word and add to partial
-    # Apply mixable prefixes to partial
+    # Apply mixable prefixes to base word and add to partial
+    # Apply mixable suffixes to partial
     # Add partial to complete
     
-    # TODO: Test if it is quicker to add prefixes before suffixes
-
     complete_words = []
     partial_words = []
     
