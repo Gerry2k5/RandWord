@@ -22,7 +22,7 @@ def main():
     parser.add_argument(
             "numwords",
             nargs="?",
-            type=int,
+            type=ap_helper_positive_int,
             default=default_word_count,
             help="Number of words to display"
     )
@@ -61,7 +61,6 @@ def main():
     all_affix_rules = get_affix_rules(args.affixfile)
     all_affixes = set(all_affix_rules.keys())
     
-    # TODO: Validation of numwords
     wordform_rules = get_words(args.dictfile, args.numwords)
     
     wordlists = []
@@ -84,6 +83,14 @@ def main():
 #    [words.extend(wordlist) for wordlist in wordlists]
 
     print(args.delim.join(words))
+
+
+def ap_helper_positive_int(string_input):
+    if not string_input.isnumeric():
+        error_msg = "Invalid value for number of words: {}".format(string_input)
+        raise argparse.ArgumentTypeError(error_msg)
+    else:
+        return int(string_input)
     
 
 def apply_affixes(base_word, affix_rules):
