@@ -7,7 +7,22 @@ Random Word Generator
 - Affix files need to be in the MySpell/Hunspell format; handling for iSpell format files may be included later.
 
 ### Using the utility
-Usage `randword.py [number of words] -d [delimiter]` OR `randword.py [number of words] --delim [delimiter]`  
+Usage:
+```randword.py [-h] [-d [DELIM]] [-i [IGNORE]] [--dictfile [DICTFILE]] [--affixfile [AFFIXFILE]] [numwords]
+positional arguments:
+  numwords              Number of words to display
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -d [DELIM], --delim [DELIM]
+                        Delimiter between words (Defaults to a single space)
+  -i [IGNORE], --ignore [IGNORE]
+                        Affix(es) to ignore (Defaults to M)
+  --dictfile [DICTFILE]
+                        Dictionary file to use for word selection
+  --affixfile [AFFIXFILE]
+                        Affix file to use for generating word variants
+```
 - The default delimiter is a single space.
 - Outputs the specified number of words to stdout.
 
