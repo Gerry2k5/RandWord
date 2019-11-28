@@ -23,8 +23,6 @@ optional arguments:
   --affixfile [AFFIXFILE]
                         Affix file to use for generating word variants
 ```
-- The default delimiter is a single space.
-- Outputs the specified number of words to stdout.
 
 ### Configuration
 - The path and name for the dictionary/affix files are defined near the start of the file and can be changed if required.
