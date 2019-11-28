@@ -8,7 +8,9 @@ Random Word Generator
 
 ### Using the utility
 Usage:
-```randword.py [-h] [-d [DELIM]] [-i [IGNORE]] [--dictfile [DICTFILE]] [--affixfile [AFFIXFILE]] [numwords]
+```
+randword.py [-h] [-d [DELIM]] [-i [IGNORE]] [--dictfile [DICTFILE]] [--affixfile [AFFIXFILE]] [numwords]
+
 positional arguments:
   numwords              Number of words to display
 
