@@ -70,14 +70,7 @@ def main():
         word_affixes = set(wordform_rule[2])
         valid_affixes = word_affixes.intersection(all_affixes)
         valid_affixes.difference_update(affix_ignore_list)
-        # TODO: Time testing for faster of difference, - and difference_update
-#        usable_affixes = valid_affixes.difference(affix_ignore_list)
-#        usable_affixes = valid_affixes - affix_ignore_list
 
-#        word_affix_rules = [
-#                all_affix_rules[affix]
-#                for affix in usable_affixes
-#        ]
         word_affix_rules = [
                 all_affix_rules[affix]
                 for affix in valid_affixes
