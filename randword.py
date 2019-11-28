@@ -58,15 +58,14 @@ def main():
 
     affix_ignore_list = set(args.ignore)
     
-    # TODO: Add args for changing the dictionary and affix file on invocation
     all_affix_rules = get_affix_rules(args.affixfile)
     all_affixes = set(all_affix_rules.keys())
     
+    # TODO: Validation of numwords
     wordform_rules = get_words(args.dictfile, args.numwords)
     
     wordlists = []
     
-    # TODO: Handle case when affix in dictionary is not in list
     for wordform_rule in wordform_rules:
         word_affixes = set(wordform_rule[2])
         valid_affixes = word_affixes.intersection(all_affixes)
@@ -233,6 +232,7 @@ def get_affix_rules(affix_file):
                          [2]: Regex expression to be matched for this
                               rule
     """
+    # TODO: filename validation for affix file
     rule_dict = {}
     file_open = False
     try:
@@ -299,6 +299,7 @@ def get_words(dictionary_file, num_words):
     the str.partition("/") function to each line read from
     the dictionary file
     """
+    # TODO: Filename validation for dictionary file
     words = []
     # Outer loop in case of exception
     while len(words) < num_words:
