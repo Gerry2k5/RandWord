@@ -9,20 +9,22 @@ Random Word Generator
 ### Using the utility
 Usage:
 ```
-randword.py [-h] [-d [DELIM]] [-i [IGNORE]] [--dictfile [DICTFILE]] [--affixfile [AFFIXFILE]] [numwords]
+randword.py [-h] [-s [SEP]] [-i [IGNORE]] [-d [DICTFILE]] [-a [AFFIXFILE]] [numwords]
+
+Random Word Generator
 
 positional arguments:
   numwords              Number of words to display
 
 optional arguments:
   -h, --help            show this help message and exit
-  -d [DELIM], --delim [DELIM]
-                        Delimiter between words (Defaults to a single space)
+  -s [SEP], --separator [SEP]
+                        Separator between words (Defaults to a single space)
   -i [IGNORE], --ignore [IGNORE]
                         Affix(es) to ignore (Defaults to M)
-  --dictfile [DICTFILE]
+  -d [DICTFILE], --dictfile [DICTFILE]
                         Dictionary file to use for word selection
-  --affixfile [AFFIXFILE]
+  -a [AFFIXFILE], --affixfile [AFFIXFILE]
                         Affix file to use for generating word variants
 ```
 
