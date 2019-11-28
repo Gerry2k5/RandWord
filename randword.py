@@ -15,7 +15,7 @@ def main():
     default_affix_file = default_dict_path + default_dict_name + ".aff"
     
     default_word_count = 1
-    default_delim = " "
+    default_sep = " "
     default_ignore = "M"
 
     parser = argparse.ArgumentParser(description="Random Word Generator")
@@ -27,11 +27,12 @@ def main():
             help="Number of words to display"
     )
     parser.add_argument(
-            "-d", "--delim",
+            "-s", "--separator",
+            dest="sep",
             nargs="?",
             const="",
-            default=default_delim,
-            help="Delimiter between words (Defaults to a single space)"
+            default=default_sep,
+            help="Separator between words (Defaults to a single space)"
     )
     parser.add_argument(
             "-i", "--ignore",
@@ -41,16 +42,18 @@ def main():
             help="Affix(es) to ignore (Defaults to " + default_ignore + ")"
     )
     parser.add_argument(
-            "--dictfile",
+            "-d", "--dictfile",
             nargs="?",
             const="",
+            type=ap_helper_valid_file,
             default=default_dict_file,
             help="Dictionary file to use for word selection"
     )
     parser.add_argument(
-            "--affixfile",
+            "-a", "--affixfile",
             nargs="?",
             const="",
+            type=ap_helper_valid_file,
             default=default_affix_file,
             help="Affix file to use for generating word variants"
     )
@@ -82,7 +85,7 @@ def main():
 #    words = []
 #    [words.extend(wordlist) for wordlist in wordlists]
 
-    print(args.delim.join(words))
+    print(args.sep.join(words))
 
 
 def ap_helper_positive_int(string_input):
@@ -91,6 +94,14 @@ def ap_helper_positive_int(string_input):
         raise argparse.ArgumentTypeError(error_msg)
     else:
         return int(string_input)
+    
+
+def ap_helper_valid_file(filename):
+    if not os.path.isfile(filename):
+        error_msg = "Filename is invalid: {}".format(filename)
+        raise argparse.ArgumentTypeError(error_msg)
+    else:
+        return filename
     
 
 def apply_affixes(base_word, affix_rules):
@@ -232,7 +243,7 @@ def get_affix_rules(affix_file):
                          [2]: Regex expression to be matched for this
                               rule
     """
-    # TODO: filename validation for affix file
+    # TODO: Check for valid affix file
     rule_dict = {}
     file_open = False
     try:
@@ -299,7 +310,7 @@ def get_words(dictionary_file, num_words):
     the str.partition("/") function to each line read from
     the dictionary file
     """
-    # TODO: Filename validation for dictionary file
+    # TODO: Check for valid dictionary file
     words = []
     # Outer loop in case of exception
     while len(words) < num_words:
