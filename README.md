@@ -11,8 +11,6 @@ Usage:
 ```
 randword.py [-h] [-s [SEP]] [-i [IGNORE]] [-d [DICTFILE]] [-a [AFFIXFILE]] [numwords]
 
-Random Word Generator
-
 positional arguments:
   numwords              Number of words to display
 
