@@ -7,6 +7,11 @@ import random
 import re
 import sys
 
+class FileContentError(Exception):
+    """Custom exception type when file contents do not match expectations"""
+    pass
+
+
 def main():
     default_dict_name = "en_GB-large"
     default_dict_path = "/usr/share/myspell/dicts/"
@@ -307,12 +312,13 @@ def get_words(dictionary_file, num_words):
     the str.partition("/") function to each line read from
     the dictionary file
     """
-    # TODO: Validate dictionary file
     words = []
     # Outer loop in case of exception
     while len(words) < num_words:
         try:
             with open(dictionary_file, "rb") as f:
+                if not str(f.readline(), "utf-8").strip().isnumeric():
+                    raise FileContentError
                 mm = mmap.mmap(f.fileno(), 0, prot=mmap.PROT_READ)
                 while len(words) < num_words:
                     word_binary = b''
@@ -325,6 +331,12 @@ def get_words(dictionary_file, num_words):
                         word_binary = mm.readline()
                     word_string = str(word_binary, "utf-8").rstrip()
                     word_form = word_string.partition("/")
+                    if " " in word_form[0]:
+#                        mm.close()
+                        raise FileContentError
+                    elif len(word_form[0].strip()) == 0:
+#                        mm.close()
+                        raise FileContentError                        
                     words.append(word_form)
                     
                 mm.close()
@@ -345,6 +357,16 @@ def get_words(dictionary_file, num_words):
                     ), 
                     file=sys.stderr
             )
+        except FileContentError:
+            if "mm" in locals():
+                mm.close()
+            print(
+                    "Invalid dictionary file: {}".format(
+                            dictionary_file
+                    ),
+                    file=sys.stderr
+            )
+            exit(1)
             
 
 if __name__ == "__main__":
