@@ -39,7 +39,7 @@ def main():
             nargs="?",
             const="",
             default=default_ignore,
-            help="Affix(es) to ignore (Defaults to " + default_ignore + ")"
+            help="Affix(es) to ignore (Defaults to {})".format(default_ignore)
     )
     parser.add_argument(
             "-d", "--dictfile",
@@ -90,7 +90,7 @@ def main():
 
 def ap_helper_positive_int(string_input):
     if not string_input.isnumeric():
-        error_msg = "Invalid value for number of words: {}".format(string_input)
+        error_msg = "Number of words is not valid: {}".format(string_input)
         raise argparse.ArgumentTypeError(error_msg)
     else:
         return int(string_input)
@@ -243,7 +243,7 @@ def get_affix_rules(affix_file):
                          [2]: Regex expression to be matched for this
                               rule
     """
-    # TODO: Check for valid affix file
+    # TODO: Validate affix file
     rule_dict = {}
     file_open = False
     try:
@@ -287,10 +287,7 @@ def get_affix_rules(affix_file):
     except OSError:
         error_type = "reading" if file_open else "opening"
         print(
-                "Error "
-                + error_type
-                + " affix file "
-                + affix_file, 
+                "Error {} affix file {}".format(error_type, affix_file),
                 file=sys.stderr
         )
         
@@ -310,7 +307,7 @@ def get_words(dictionary_file, num_words):
     the str.partition("/") function to each line read from
     the dictionary file
     """
-    # TODO: Check for valid dictionary file
+    # TODO: Validate dictionary file
     words = []
     # Outer loop in case of exception
     while len(words) < num_words:
@@ -335,7 +332,7 @@ def get_words(dictionary_file, num_words):
                     
         except OSError:
             print(
-                    "Error opening " + dictionary_file + " for reading", 
+                    "Error opening {} for reading".format(dictionary_file), 
                     file=sys.stderr
             )
             return None
@@ -343,8 +340,9 @@ def get_words(dictionary_file, num_words):
         except ValueError:
             mm.close()
             print(
-                    "Seek error at position " + random_pos
-                    + " in dictionary file " + dictionary_file, 
+                    "Seek error at position {} in dictionary file {}".format(
+                            random_pos, dictionary_file
+                    ), 
                     file=sys.stderr
             )
             
