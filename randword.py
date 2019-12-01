@@ -82,7 +82,7 @@ def main():
                 all_affix_rules[affix]
                 for affix in valid_affixes
         ]
-        wordlist = apply_affixes(wordform_rule[0], word_affix_rules)
+        wordlist = apply_affixes(wordform_rule[0].strip('"'), word_affix_rules)
         wordlists.append(wordlist)
 
     words = [random.choice(wordlist) for wordlist in wordlists]
@@ -247,6 +247,8 @@ def get_affix_rules(affix_file):
                                suffix)
                          [2]: Regex expression to be matched for this
                               rule
+    See http://manpages.ubuntu.com/manpages/trusty/en/man4/hunspell.4.html
+    for more information on affix file format
     """
     # TODO: Validate affix file
     rule_dict = {}
@@ -330,13 +332,12 @@ def get_words(dictionary_file, num_words):
                         mm.readline()   # Move to next line
                         word_binary = mm.readline()
                     word_string = str(word_binary, "utf-8").rstrip()
-                    word_form = word_string.partition("/")
+                    word_form = word_string.rpartition("/")
                     if " " in word_form[0]:
-#                        mm.close()
                         raise FileContentError
                     elif len(word_form[0].strip()) == 0:
-#                        mm.close()
-                        raise FileContentError                        
+                        raise FileContentError  
+                    # TODO: Possibly implement NOSUGGEST from Affix File 
                     words.append(word_form)
                     
                 mm.close()
