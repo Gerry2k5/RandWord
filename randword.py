@@ -15,10 +15,10 @@ class FileContentError(Exception):
 def main():
     default_dict_name = "en_GB-large"
     default_dict_path = "/usr/share/myspell/dicts/"
-    
+
     default_dict_file = default_dict_path + default_dict_name + ".dic"
     default_affix_file = default_dict_path + default_dict_name + ".aff"
-    
+
     default_word_count = 1
     default_sep = " "
     default_ignore = "M"
@@ -65,14 +65,14 @@ def main():
     args = parser.parse_args()
 
     affix_ignore_list = set(args.ignore)
-    
+
     all_affix_rules = get_affix_rules(args.affixfile)
     all_affixes = set(all_affix_rules.keys())
-    
+
     wordform_rules = get_words(args.dictfile, args.numwords)
-    
+
     wordlists = []
-    
+
     for wordform_rule in wordform_rules:
         word_affixes = set(wordform_rule[2])
         valid_affixes = word_affixes.intersection(all_affixes)
@@ -99,7 +99,7 @@ def ap_helper_positive_int(string_input):
         raise argparse.ArgumentTypeError(error_msg)
     else:
         return int(string_input)
-    
+
 
 def ap_helper_valid_file(filename):
     if not os.path.isfile(filename):
@@ -107,16 +107,16 @@ def ap_helper_valid_file(filename):
         raise argparse.ArgumentTypeError(error_msg)
     else:
         return filename
-    
+
 
 def apply_affixes(base_word, affix_rules):
     """
     Build all possible words by applying affix rules to a base word
-    
+
     Parameters:
     base_word (string):  Base word without any affix specifiers
     affix_rules (list):  Affix rules to be applied
-    
+
     Returns:
     List object containing all words formed by applying
     affixes to the base word.
@@ -128,12 +128,12 @@ def apply_affixes(base_word, affix_rules):
     # Apply mixable prefixes to base word and add to partial
     # Apply mixable suffixes to partial
     # Add partial to complete
-    
+
     complete_words = []
     partial_words = []
-    
+
     partial_words.append(base_word)
-    
+
     complete_words.extend([
             apply_suffix(base_word, affix_rule[3:])
             for affix_rule in affix_rules
@@ -156,18 +156,18 @@ def apply_affixes(base_word, affix_rules):
                 if affix_rule[0] == "SFX" and affix_rule[1]
         ])
     complete_words.extend(partial_words)
-    
+
     return complete_words
 
 
 def apply_prefix(base_word, prefix_rules):
     """
     Evaluate prefix rules and apply the relevant rule to a word
-    
+
     Parameters:
     base_word (string):    Base word
     prefix_rules (list):   Prefix rules to be evaluated
-    
+
     Returns:
     The base word with the relevant prefix prepended
     """
@@ -185,16 +185,16 @@ def apply_prefix(base_word, prefix_rules):
     else:
         return base_word
     return prefix_chars + part_word
-        
+
 
 def apply_suffix(base_word, suffix_rules):
     """
     Evaluate suffix rules and apply the relevant rule to a word
-    
+
     Parameters:
     base_word (string):    Base word
     suffix_rules (list):   Suffix rules to be evaluated
-    
+
     Returns:
     The base word with the relevant suffix appended
     """
@@ -212,16 +212,16 @@ def apply_suffix(base_word, suffix_rules):
     else:
         return base_word
     return part_word + suffix_chars
-    
+
 
 def get_affix_rules(affix_file):
     """
     Read affix rules from a specified file and return these
     in a structured format
-    
+
     Parameters:
     affix_file (string):  Path to affix file
-    
+
     Returns:
     Dict object with the following structure:
         Key:    Identifying letter for this affix
@@ -229,7 +229,7 @@ def get_affix_rules(affix_file):
                     [0]: String object containing the value "PFX" or
                          "SFX" to indicate the affix type
                     [1]: Boolean object indicating whether this affix
-                         can be combined with other affixes 
+                         can be combined with other affixes
                          (only 1 prefix and 1 suffix can be added to
                           a base word)
                     [2]: Integer object indicating how many match rules
@@ -272,8 +272,8 @@ def get_affix_rules(affix_file):
                         )
                         rule_count = int(rule_data[3])
                         rule_dict[rule_id] = [
-                                rule_type, 
-                                can_combine, 
+                                rule_type,
+                                can_combine,
                                 rule_count
                         ]
                     else:
@@ -290,25 +290,24 @@ def get_affix_rules(affix_file):
                         )
                         rule_dict[rule_id].append(tuple(rule_data[2:]))
                         rule_count -= 1
-                
     except OSError:
         error_type = "reading" if file_open else "opening"
         print(
                 "Error {} affix file {}".format(error_type, affix_file),
                 file=sys.stderr
         )
-        
+
     return rule_dict
 
 
 def get_words(dictionary_file, num_words):
     """
     Get a specified number of words from a dictionary file
-    
+
     Parameters:
     dictionary_file (string):    Path to dictionary file
     num_words (int):             Number of words to be returned
-    
+
     Returns:
     A list of tuples, each of which is obtained by applying
     the str.partition("/") function to each line read from
@@ -339,26 +338,26 @@ def get_words(dictionary_file, num_words):
                         raise FileContentError
                     elif len(word_form[0].strip()) == 0:
                         raise FileContentError
-                    # TODO: Possibly implement NOSUGGEST from Affix File 
+                    # TODO: Possibly implement NOSUGGEST from Affix File
                     else:
                         words.append(word_form)
-                    
+
                 mm.close()
             return words
-                    
+
         except OSError:
             print(
-                    "Error opening {} for reading".format(dictionary_file), 
+                    "Error opening {} for reading".format(dictionary_file),
                     file=sys.stderr
             )
             return None
-        
+
         except ValueError:
             mm.close()
             print(
                     "Seek error at position {} in dictionary file {}".format(
                             random_pos, dictionary_file
-                    ), 
+                    ),
                     file=sys.stderr
             )
         except FileContentError:
@@ -371,7 +370,7 @@ def get_words(dictionary_file, num_words):
                     file=sys.stderr
             )
             exit(1)
-            
+
 
 if __name__ == "__main__":
     main()
