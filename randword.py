@@ -333,12 +333,15 @@ def get_words(dictionary_file, num_words):
                         word_binary = mm.readline()
                     word_string = str(word_binary, "utf-8").rstrip()
                     word_form = word_string.rpartition("/")
+                    if word_form[1] != "/":
+                        word_form = (word_form[:][2], '', '')
                     if " " in word_form[0]:
                         raise FileContentError
                     elif len(word_form[0].strip()) == 0:
-                        raise FileContentError  
+                        raise FileContentError
                     # TODO: Possibly implement NOSUGGEST from Affix File 
-                    words.append(word_form)
+                    else:
+                        words.append(word_form)
                     
                 mm.close()
             return words
