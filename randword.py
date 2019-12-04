@@ -7,6 +7,7 @@ import random
 import re
 import sys
 
+
 class FileContentError(Exception):
     """Custom exception type when file contents do not match expectations"""
     pass
@@ -25,42 +26,42 @@ def main():
 
     parser = argparse.ArgumentParser(description="Random Word Generator")
     parser.add_argument(
-            "numwords",
-            nargs="?",
-            type=ap_helper_positive_int,
-            default=default_word_count,
-            help="Number of words to display"
+        "numwords",
+        nargs="?",
+        type=ap_helper_positive_int,
+        default=default_word_count,
+        help="Number of words to display"
     )
     parser.add_argument(
-            "-s", "--separator",
-            dest="sep",
-            nargs="?",
-            const="",
-            default=default_sep,
-            help="Separator between words (Defaults to a single space)"
+        "-s", "--separator",
+        dest="sep",
+        nargs="?",
+        const="",
+        default=default_sep,
+        help="Separator between words (Defaults to a single space)"
     )
     parser.add_argument(
-            "-i", "--ignore",
-            nargs="?",
-            const="",
-            default=default_ignore,
-            help="Affix(es) to ignore (Defaults to {})".format(default_ignore)
+        "-i", "--ignore",
+        nargs="?",
+        const="",
+        default=default_ignore,
+        help="Affix(es) to ignore (Defaults to {})".format(default_ignore)
     )
     parser.add_argument(
-            "-d", "--dictfile",
-            nargs="?",
-            const="",
-            type=ap_helper_valid_file,
-            default=default_dict_file,
-            help="Dictionary file to use for word selection"
+        "-d", "--dictfile",
+        nargs="?",
+        const="",
+        type=ap_helper_valid_file,
+        default=default_dict_file,
+        help="Dictionary file to use for word selection"
     )
     parser.add_argument(
-            "-a", "--affixfile",
-            nargs="?",
-            const="",
-            type=ap_helper_valid_file,
-            default=default_affix_file,
-            help="Affix file to use for generating word variants"
+        "-a", "--affixfile",
+        nargs="?",
+        const="",
+        type=ap_helper_valid_file,
+        default=default_affix_file,
+        help="Affix file to use for generating word variants"
     )
     args = parser.parse_args()
 
@@ -79,8 +80,7 @@ def main():
         valid_affixes.difference_update(affix_ignore_list)
 
         word_affix_rules = [
-                all_affix_rules[affix]
-                for affix in valid_affixes
+            all_affix_rules[affix] for affix in valid_affixes
         ]
         wordlist = apply_affixes(wordform_rule[0].strip('"'), word_affix_rules)
         wordlists.append(wordlist)
@@ -135,25 +135,25 @@ def apply_affixes(base_word, affix_rules):
     partial_words.append(base_word)
 
     complete_words.extend([
-            apply_suffix(base_word, affix_rule[3:])
-            for affix_rule in affix_rules
-            if affix_rule[0] == "PFX" and not affix_rule[1]
+        apply_suffix(base_word, affix_rule[3:])
+        for affix_rule in affix_rules
+        if affix_rule[0] == "PFX" and not affix_rule[1]
     ])
     complete_words.extend([
-            apply_prefix(base_word, affix_rule[3:])
-            for affix_rule in affix_rules
-            if affix_rule[0] == "SFX" and not affix_rule[1]
+        apply_prefix(base_word, affix_rule[3:])
+        for affix_rule in affix_rules
+        if affix_rule[0] == "SFX" and not affix_rule[1]
     ])
     partial_words.extend([
-            apply_prefix(base_word, affix_rule[3:])
-            for affix_rule in affix_rules
-            if affix_rule[0] == "PFX" and affix_rule[1]
+        apply_prefix(base_word, affix_rule[3:])
+        for affix_rule in affix_rules
+        if affix_rule[0] == "PFX" and affix_rule[1]
     ])
     for partial_word in partial_words[:]:
         partial_words.extend([
-                apply_suffix(partial_word, affix_rule[3:])
-                for affix_rule in affix_rules
-                if affix_rule[0] == "SFX" and affix_rule[1]
+            apply_suffix(partial_word, affix_rule[3:])
+            for affix_rule in affix_rules
+            if affix_rule[0] == "SFX" and affix_rule[1]
         ])
     complete_words.extend(partial_words)
 
@@ -176,15 +176,15 @@ def apply_prefix(base_word, prefix_rules):
             continue
         delete_chars = prefix_rule[0]
         prefix_chars = prefix_rule[1]
-        part_word = (
-                base_word[len(delete_chars):]
-                if len(delete_chars) > 0
-                else base_word
+        partial_word = (
+            base_word[len(delete_chars):]
+            if len(delete_chars) > 0
+            else base_word
         )
         break
     else:
         return base_word
-    return prefix_chars + part_word
+    return prefix_chars + partial_word
 
 
 def apply_suffix(base_word, suffix_rules):
@@ -203,15 +203,15 @@ def apply_suffix(base_word, suffix_rules):
             continue
         delete_chars = suffix_rule[0]
         suffix_chars = suffix_rule[1]
-        part_word = (
-                base_word[:-(len(delete_chars))]
-                if len(delete_chars) > 0
-                else base_word
+        partial_word = (
+            base_word[:-(len(delete_chars))]
+            if len(delete_chars) > 0
+            else base_word
         )
         break
     else:
         return base_word
-    return part_word + suffix_chars
+    return partial_word + suffix_chars
 
 
 def get_affix_rules(affix_file):
@@ -260,41 +260,34 @@ def get_affix_rules(affix_file):
             for line in f:
                 if not re.match("^[PS]FX\s", line):
                     continue
+                rule_data = line.split()
+                if rule_count == 0:
+                    rule_type = rule_data[0]
+                    rule_id = rule_data[1]
+                    can_combine = (
+                        True if rule_data[2] == "Y" else False
+                    )
+                    rule_count = int(rule_data[3])
+                    rule_dict[rule_id] = [
+                        rule_type, can_combine, rule_count
+                    ]
                 else:
-                    rule_data = line.split()
-                    if rule_count == 0:
-                        rule_type = rule_data[0]
-                        rule_id = rule_data[1]
-                        can_combine = (
-                                True
-                                if rule_data[2] == "Y"
-                                else False
-                        )
-                        rule_count = int(rule_data[3])
-                        rule_dict[rule_id] = [
-                                rule_type,
-                                can_combine,
-                                rule_count
-                        ]
-                    else:
-                        rule_id = rule_data[1]
-                        rule_data[2] = (
-                                ''
-                                if rule_data[2] == "0"
-                                else rule_data[2]
-                        )
-                        rule_data[4] = (
-                                "^" + rule_data[4][:]
-                                if rule_type == "PFX"
-                                else rule_data[4][:] + "$"
-                        )
-                        rule_dict[rule_id].append(tuple(rule_data[2:]))
-                        rule_count -= 1
+                    rule_id = rule_data[1]
+                    rule_data[2] = (
+                        '' if rule_data[2] == "0" else rule_data[2]
+                    )
+                    rule_data[4] = (
+                        "^" + rule_data[4][:]
+                        if rule_type == "PFX"
+                        else rule_data[4][:] + "$"
+                    )
+                    rule_dict[rule_id].append(tuple(rule_data[2:]))
+                    rule_count -= 1
     except OSError:
         error_type = "reading" if file_open else "opening"
         print(
-                "Error {} affix file {}".format(error_type, affix_file),
-                file=sys.stderr
+            "Error {} affix file {}".format(error_type, affix_file),
+            file=sys.stderr
         )
 
     return rule_dict
@@ -324,9 +317,9 @@ def get_words(dictionary_file, num_words):
                 while len(words) < num_words:
                     word_binary = b''
                     while word_binary == b'':
-                        random_pos = int(random.random()
-                                         * os.path.getsize(dictionary_file)
-                                     )
+                        random_pos = int(
+                            random.random() * os.path.getsize(dictionary_file)
+                        )
                         mm.seek(random_pos)
                         mm.readline()   # Move to next line
                         word_binary = mm.readline()
@@ -347,27 +340,25 @@ def get_words(dictionary_file, num_words):
 
         except OSError:
             print(
-                    "Error opening {} for reading".format(dictionary_file),
-                    file=sys.stderr
+                "Error opening {} for reading".format(dictionary_file),
+                file=sys.stderr
             )
             return None
 
         except ValueError:
             mm.close()
             print(
-                    "Seek error at position {} in dictionary file {}".format(
-                            random_pos, dictionary_file
-                    ),
-                    file=sys.stderr
+                "Seek error at position {} in dictionary file {}".format(
+                    random_pos, dictionary_file
+                ),
+                file=sys.stderr
             )
         except FileContentError:
             if "mm" in locals():
                 mm.close()
             print(
-                    "Invalid dictionary file: {}".format(
-                            dictionary_file
-                    ),
-                    file=sys.stderr
+                "Invalid dictionary file: {}".format(dictionary_file),
+                file=sys.stderr
             )
             exit(1)
 
