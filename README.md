@@ -36,4 +36,4 @@ The affixes can be included in a single string, as this is built into a set when
 - None at present
 
 ### Future plans for development
-- Add the ability to specify the dictionary and affix file on the comamnd line
+- Add the ability to specify the dictionary and affix file on the command line
