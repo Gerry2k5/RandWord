@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import timeit
-import randword
+from src import randword
 
 REPS=10000
 WORD_COUNT=1000
