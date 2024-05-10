@@ -233,7 +233,7 @@ def get_affix_rules(affix_file):
             file_open = True
             rule_count = 0
             for line in f:
-                if not re.match("^[PS]FX\s", line):
+                if not re.match(r"^[PS]FX\s", line):
                     continue
                 else:
                     rule_data = line.split()
